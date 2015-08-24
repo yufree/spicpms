@@ -20,7 +20,7 @@ shinyUI(fluidPage(
                         choices = list("Au", "Ag","SiO2","TiO2","ZnO"),
                         selected = "Au"),
             sliderInput("flow", label = "flow rate(ml/min)", min = 0.01, max = 0.5, value = 0.022, step = 0.001),
-            sliderInput("dwell", label = "dwell time(ms)", min = 0, max = 20, value = 3, step = 1),
+            sliderInput("dwell", label = "dwell time(ms)", min = 0, max = 20, value = 3, step = 0.1),
             numericInput("con", label = "standard concentration(ng/L)", value = 50),
             numericInput("di", label = "standard diameter(nm)", value = 60),
             fileInput('files', 'Choose standard CSV File',accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),

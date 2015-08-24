@@ -58,13 +58,17 @@ shinyServer(function(input, output) {
           signalcount <- input$nrowss-backgroundcounts
           # counts per ml
           numcon <- signalcount/neb/60000
-          par(mfrow = c(1,2))
-          hist(realdi,probability = TRUE,breaks = input$breaks, xlab = "diameter(nm)", main = "")
+          # for one cell mode
+          realnum <- realmasss/nanomass
+          medianrealnum <- median(realnum)
+          par(mfrow = c(1,3))
+          hist(realdi,probability = TRUE,breaks = input$breaks, xlab = "diameter(nm)", main = "standard")
            dens <- density(realdi, adjust = input$bw_adjust)
            lines(dens, col = "blue", ylab = '')
-          hist(realdis,probability = TRUE,breaks = input$breaks, xlab = "diameter(nm)", main = "")
+          hist(realdis,probability = TRUE,breaks = input$breaks, xlab = "diameter(nm)", main = "sample")
           den <- density(realdis, adjust = input$bw_adjust)
           lines(den, col = "red")
+          hist(realnum,breaks = input$breaks, xlab = "counts", main = "one cell mode")
   })
   
   output$print <- renderTable({
@@ -118,17 +122,23 @@ shinyServer(function(input, output) {
           signalcount <- input$nrowss-backgroundcounts
           samplecon <- sum(realmasss/(input$dwell*signalcount*input$flow/60))
           # counts per ml
-          
           numcon <- signalcount/neb/60000
+          
+          # for one cell mode
+          realnum <- realmasss/nanomass
+          medianrealnum <- format(round(median(realnum), 2))
+          
+          signalcounts <- format(round(signalcounts/60000, 6), nsmall = 6)
+          signalcount <- format(round(signalcount/60000, 6), nsmall = 6)
           numconstd <- format(round(numconstd, 2), nsmall = 2)
           neb <- format(round(neb, 2), nsmall = 2)
           medianstd <- format(round(medianstd, 2), nsmall = 2)
           samplecon <- format(round(samplecon, 2), nsmall = 2)
           numcon <- format(round(numcon, 2), nsmall = 2)
           mediansample <- format(round(mediansample, 2), nsmall = 2)
-          title <- c('concentration(ng/L)','number concentration(counts per mL)','median diameter(nm)','nebulazition efficiency')
-          standard <- c(input$con,numconstd,medianstd,neb)
-          sample <- c(samplecon,numcon,mediansample,neb)
+          title <- c('concentration(ng/L)','raw number concentration(counts per mL)','number concentration(counts per mL)','median diameter(nm)','nebulazition efficiency','cell mode median number')
+          standard <- c(input$con,signalcounts,numconstd,medianstd,neb,0)
+          sample <- c(samplecon,signalcount,numcon,mediansample,neb,medianrealnum)
           data <- data.frame(standard,sample)
           rownames(data) <- title
           return(data)
